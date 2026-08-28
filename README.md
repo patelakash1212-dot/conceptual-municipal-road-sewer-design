@@ -1,4 +1,4 @@
-# Municipal Road and Sewer Design
+# Municipal Road and Sewer Design Portfolio
 
 ![Civil 3D](https://img.shields.io/badge/Autodesk-Civil%203D-2878B5?style=for-the-badge)
 ![Project](https://img.shields.io/badge/Project-Conceptual-21A6A1?style=for-the-badge)
@@ -8,7 +8,13 @@ An anonymized Civil 3D portfolio project demonstrating a coordinated municipal r
 
 > **Conceptual Portfolio Project - Not for Construction.** This repository demonstrates software and drawing-production skills. It is not an issued design, permit submission, tender package, record drawing, or construction document.
 
-![Portfolio cover](assets/portfolio-cover.png)
+[![Municipal Road and Sewer Design Portfolio cover](assets/portfolio-cover.png)](docs/Municipal_Road_and_Sewer_Design_Portfolio.pdf)
+
+<div align="center">
+
+**Click the cover to open the complete portfolio.**
+
+</div>
 
 ## Portfolio
 
@@ -16,7 +22,7 @@ An anonymized Civil 3D portfolio project demonstrating a coordinated municipal r
 
 The portfolio includes an overview, four plan/profile exhibits, demonstrated Civil 3D capabilities, and explicit data and professional-use limitations.
 
-## Project at a glance
+## Project at a Glance
 
 | Design component | Demonstrated work |
 |---|---|
@@ -27,11 +33,11 @@ The portfolio includes an overview, four plan/profile exhibits, demonstrated Civ
 | Drawing production | View frames, match lines, plan/profile sheets, colour plotting and sheet-set publication |
 | Quality review | Network/profile consistency, structure placement, slopes, inverts, cover and drawing readability |
 
-## Drawing sample
+## Drawing Sample
 
 ![Plan and profile drawing sample](assets/plan-profile-sample.png)
 
-## Civil 3D workflow
+## Civil 3D Workflow
 
 ```text
 Public mapping and terrain data
@@ -57,7 +63,7 @@ Public mapping and terrain data
        Colour portfolio output
 ```
 
-## Skills demonstrated
+## Skills Demonstrated
 
 - Civil 3D surface, alignment, profile and corridor organization
 - Road geometry and intersection transition coordination
@@ -67,13 +73,13 @@ Public mapping and terrain data
 - View frames, match lines, XREF coordination and sheet-set publishing
 - Colour PDF production and drawing presentation
 
-## Data and engineering limitations
+## Data and Engineering Limitations
 
 Existing conditions were interpreted from public GIS and LiDAR-derived terrain information. Utility locations, elevations, materials and capacities require survey, records review, subsurface investigation, field verification and engineering review before real-world use.
 
 The drawings have not been independently checked, approved, sealed, tendered or constructed. File existence and successful Civil 3D regeneration do not establish technical compliance or design suitability.
 
-## Repository structure
+## Repository Structure
 
 ```text
 .
@@ -92,7 +98,6 @@ The drawings have not been independently checked, approved, sealed, tendered or 
 - AutoCAD sheet sets and external references
 - GIS and LiDAR-derived source information
 
-## Author note
+## Author Note
 
 This project is intentionally anonymized. The public repository excludes original survey data, GIS source files, proprietary references, editable production drawings and any real street name.
-
