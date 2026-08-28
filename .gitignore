@@ -1,0 +1,29 @@
+# Civil 3D working and recovery files
+*.bak
+*.dwl
+*.dwl2
+*.sv$
+*.ac$
+*.mms
+
+# Source and reference drawings are intentionally excluded
+*.dwg
+*.dxf
+*.dst
+
+# GIS and terrain source data are intentionally excluded
+*.shp
+*.shx
+*.dbf
+*.prj
+*.cpg
+*.tif
+*.tiff
+*.las
+*.laz
+
+# Temporary and operating-system files
+tmp/
+Thumbs.db
+.DS_Store
+
