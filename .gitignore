@@ -22,8 +22,14 @@
 *.las
 *.laz
 
+# Local-only portfolio input and generated quality-review files
+source/Project.pdf
+.build/
+qa-preview/
+__pycache__/
+*.pyc
+
 # Temporary and operating-system files
 tmp/
 Thumbs.db
 .DS_Store
-

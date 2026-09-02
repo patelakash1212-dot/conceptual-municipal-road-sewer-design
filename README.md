@@ -4,9 +4,9 @@
 ![Project](https://img.shields.io/badge/Project-Conceptual-21A6A1?style=for-the-badge)
 ![Status](https://img.shields.io/badge/Status-Not%20for%20Construction-E55A5A?style=for-the-badge)
 
-An anonymized Civil 3D portfolio project demonstrating a coordinated municipal road corridor with storm and sanitary sewer networks, plan/profile production, annotation, data bands, view frames, match lines, and colour sheet-set publishing.
+An anonymized Civil 3D portfolio demonstrating a coordinated municipal road corridor with storm and sanitary sewer networks, plan/profile production, annotation, data bands, view frames, match lines and colour sheet-set publishing.
 
-> **Conceptual Portfolio Project - Not for Construction.** This repository demonstrates software and drawing-production skills. It is not an issued design, permit submission, tender package, record drawing, or construction document.
+> **Conceptual Portfolio Project - Not for Construction.** This repository demonstrates software and drawing-production skills. It is not an issued design, permit submission, tender package, record drawing or construction document.
 
 [![Municipal Road and Sewer Design Portfolio cover](assets/portfolio-cover.png)](docs/Municipal_Road_and_Sewer_Design_Portfolio.pdf)
 
@@ -18,9 +18,9 @@ An anonymized Civil 3D portfolio project demonstrating a coordinated municipal r
 
 ## Portfolio
 
-[View the complete seven-page portfolio PDF](docs/Municipal_Road_and_Sewer_Design_Portfolio.pdf)
+[View the complete portfolio PDF](docs/Municipal_Road_and_Sewer_Design_Portfolio.pdf)
 
-The portfolio includes an overview, four plan/profile exhibits, demonstrated Civil 3D capabilities, and explicit data and professional-use limitations.
+The portfolio includes a recruiter-focused opening page, project overview, current plan/profile exhibits, demonstrated Civil 3D capabilities, and explicit data and professional-use limitations.
 
 ## Project at a Glance
 
@@ -37,32 +37,6 @@ The portfolio includes an overview, four plan/profile exhibits, demonstrated Civ
 
 ![Plan and profile drawing sample](assets/plan-profile-sample.png)
 
-## Civil 3D Workflow
-
-```text
-Public mapping and terrain data
-              |
-              v
-      Existing-ground surface
-              |
-              v
- Alignment -> profile -> road corridor
-              |
-              +---------> intersection coordination
-              |
-              v
-    Storm and sanitary networks
-              |
-              v
- Plan/profile views and data bands
-              |
-              v
-     View frames and sheet set
-              |
-              v
-       Colour portfolio output
-```
-
 ## Skills Demonstrated
 
 - Civil 3D surface, alignment, profile and corridor organization
@@ -72,6 +46,23 @@ Public mapping and terrain data
 - Profile bands for stations, pipe data and structures
 - View frames, match lines, XREF coordination and sheet-set publishing
 - Colour PDF production and drawing presentation
+
+## Update the Portfolio from New Sheets
+
+The local clone contains a one-file workflow. Your raw plotted sheets remain local and are not uploaded.
+
+1. Publish all current Civil 3D sheets as one multi-page colour PDF.
+2. Replace `source/Project.pdf` and keep that exact filename.
+3. Double-click `REBUILD_AND_PUSH.bat`.
+4. Review the PNG pages created in `qa-preview`.
+
+The script performs basic PDF checks, adapts automatically to the sheet count, rebuilds the portfolio PDF and preview images, commits those generated files, and pushes them to this repository. Always inspect `qa-preview` as well; some Civil 3D text may be plotted as graphics and cannot be detected automatically.
+
+To build without committing or pushing:
+
+```powershell
+.\update-github.ps1 -NoPush
+```
 
 ## Data and Engineering Limitations
 
@@ -85,6 +76,12 @@ The drawings have not been independently checked, approved, sealed, tendered or 
 .
 |-- README.md
 |-- PROJECT_NOTES.md
+|-- REBUILD_AND_PUSH.bat
+|-- update-github.ps1
+|-- scripts/
+|   `-- build_portfolio.py
+|-- source/
+|   `-- README.txt
 |-- docs/
 |   `-- Municipal_Road_and_Sewer_Design_Portfolio.pdf
 `-- assets/
@@ -96,7 +93,8 @@ The drawings have not been independently checked, approved, sealed, tendered or 
 
 - Autodesk Civil 3D
 - AutoCAD sheet sets and external references
-- GIS and LiDAR-derived source information
+- Python 3 with Pillow, pypdf and reportlab
+- Poppler (`pdftoppm`)
 
 ## Author Note
 
