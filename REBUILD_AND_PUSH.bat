@@ -1,5 +1,7 @@
 @echo off
+title Municipal Portfolio - Rebuild and Push
 cd /d "%~dp0"
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0update-github.ps1"
+echo Repository: %CD%
+echo Starting the portfolio builder. Keep this window open.
 echo.
-pause
+powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -NoExit -File "%~dp0update-github.ps1"
