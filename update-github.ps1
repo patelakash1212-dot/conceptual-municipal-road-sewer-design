@@ -45,6 +45,12 @@ try {
         exit 0
     }
 
+    $Approval = Read-Host "Review qa-preview now. Type YES to commit and push these generated files"
+    if ($Approval -cne "YES") {
+        Write-Host "Cancelled. The rebuilt files remain local and nothing was pushed." -ForegroundColor Yellow
+        exit 0
+    }
+
     git add -- "docs/Municipal_Road_and_Sewer_Design_Portfolio.pdf" "assets/portfolio-cover.png" "assets/plan-profile-sample.png"
     $Pending = git diff --cached --name-only
     if (-not $Pending) {

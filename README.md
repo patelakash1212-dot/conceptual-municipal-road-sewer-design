@@ -54,7 +54,7 @@ The local clone contains a one-file workflow. Your raw plotted sheets remain loc
 1. Publish all current Civil 3D sheets as one multi-page colour PDF.
 2. Replace `source/Project.pdf` and keep that exact filename.
 3. Double-click `REBUILD_AND_PUSH.bat`.
-4. Review the PNG pages created in `qa-preview`.
+4. Review the PNG pages created in `qa-preview`, then type `YES` in the command window to commit and push.
 
 The script performs basic PDF checks, adapts automatically to the sheet count, rebuilds the portfolio PDF and preview images, commits those generated files, and pushes them to this repository. Always inspect `qa-preview` as well; some Civil 3D text may be plotted as graphics and cannot be detected automatically.
 
