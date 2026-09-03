@@ -20,7 +20,7 @@ An anonymized Civil 3D portfolio demonstrating a coordinated municipal road corr
 
 [View the complete portfolio PDF](docs/Municipal_Road_and_Sewer_Design_Portfolio.pdf)
 
-The portfolio includes a recruiter-focused opening page, project overview, current plan/profile exhibits, demonstrated Civil 3D capabilities, and explicit data and professional-use limitations.
+The portfolio includes a project overview, coordinated plan/profile exhibits, demonstrated Civil 3D capabilities, and explicit data and professional-use limitations.
 
 ## Project at a Glance
 
@@ -47,23 +47,6 @@ The portfolio includes a recruiter-focused opening page, project overview, curre
 - View frames, match lines, XREF coordination and sheet-set publishing
 - Colour PDF production and drawing presentation
 
-## Update the Portfolio from New Sheets
-
-The local clone contains a one-file workflow. Your raw plotted sheets remain local and are not uploaded.
-
-1. Publish all current Civil 3D sheets as one multi-page colour PDF.
-2. Replace `source/Project.pdf` and keep that exact filename.
-3. Double-click `REBUILD_AND_PUSH.bat`.
-4. Review the PNG pages created in `qa-preview`, then type `YES` in the command window to commit and push.
-
-The script performs basic PDF checks, adapts automatically to the sheet count, rebuilds the portfolio PDF and preview images, commits those generated files, and pushes them to this repository. Always inspect `qa-preview` as well; some Civil 3D text may be plotted as graphics and cannot be detected automatically.
-
-To build without committing or pushing:
-
-```powershell
-.\update-github.ps1 -NoPush
-```
-
 ## Data and Engineering Limitations
 
 Existing conditions were interpreted from public GIS and LiDAR-derived terrain information. Utility locations, elevations, materials and capacities require survey, records review, subsurface investigation, field verification and engineering review before real-world use.
@@ -76,12 +59,6 @@ The drawings have not been independently checked, approved, sealed, tendered or 
 .
 |-- README.md
 |-- PROJECT_NOTES.md
-|-- REBUILD_AND_PUSH.bat
-|-- update-github.ps1
-|-- scripts/
-|   `-- build_portfolio.py
-|-- source/
-|   `-- README.txt
 |-- docs/
 |   `-- Municipal_Road_and_Sewer_Design_Portfolio.pdf
 `-- assets/
@@ -93,8 +70,6 @@ The drawings have not been independently checked, approved, sealed, tendered or 
 
 - Autodesk Civil 3D
 - AutoCAD sheet sets and external references
-- Python 3 with Pillow, pypdf and reportlab
-- Poppler (`pdftoppm`)
 
 ## Author Note
 

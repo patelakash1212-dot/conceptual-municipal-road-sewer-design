@@ -23,7 +23,10 @@
 *.laz
 
 # Local-only portfolio input and generated quality-review files
-source/Project.pdf
+source/
+scripts/
+REBUILD_AND_PUSH.bat
+update-github.ps1
 .build/
 qa-preview/
 __pycache__/
