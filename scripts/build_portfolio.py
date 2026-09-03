@@ -1,10 +1,6 @@
-from __future__ import annotations
-
-import shutil
-import subprocess
 from pathlib import Path
-
-from PIL import Image
+import shutil, subprocess
+from PIL import Image, ImageEnhance
 from pypdf import PdfReader
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import landscape
@@ -12,248 +8,132 @@ from reportlab.lib.units import inch
 from reportlab.lib.utils import ImageReader
 from reportlab.pdfgen import canvas
 
-
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "source" / "Project.pdf"
 OUTPUT = ROOT / "docs" / "Municipal_Road_and_Sewer_Design_Portfolio.pdf"
-ASSETS = ROOT / "assets"
-QA = ROOT / "qa-preview"
-PAGE_W, PAGE_H = landscape((11 * inch, 17 * inch))
-NAVY = colors.HexColor("#17324D")
-TEAL = colors.HexColor("#21A6A1")
-INK = colors.HexColor("#1D2B34")
-LIGHT = colors.HexColor("#D7E2E8")
+ASSETS, QA = ROOT / "assets", ROOT / "qa-preview"
+W, H = landscape((11 * inch, 17 * inch))
+PAPER, WHITE = colors.HexColor("#F6F7F5"), colors.white
+INK, SLATE = colors.HexColor("#202B33"), colors.HexColor("#596A73")
+BLUE, GREEN = colors.HexColor("#1F5D78"), colors.HexColor("#527861")
+PALE_B, PALE_G, LINE = colors.HexColor("#E9F0F3"), colors.HexColor("#EDF2EE"), colors.HexColor("#C8D1D5")
 
-
-def find_pdftoppm() -> str:
+def pdftoppm():
     found = shutil.which("pdftoppm")
-    if found:
-        return found
-    bundled = Path.home() / ".cache/codex-runtimes/codex-primary-runtime/dependencies/native/poppler/Library/bin/pdftoppm.exe"
-    if bundled.exists():
-        return str(bundled)
-    raise RuntimeError("pdftoppm was not found. Install Poppler or add pdftoppm to PATH.")
+    bundled = Path.home()/".cache/codex-runtimes/codex-primary-runtime/dependencies/native/poppler/Library/bin/pdftoppm.exe"
+    if found: return found
+    if bundled.exists(): return str(bundled)
+    raise RuntimeError("pdftoppm was not found. Install Poppler or add it to PATH.")
 
+def fit(path, x, y, w, h):
+    with Image.open(path) as im: iw, ih = im.size
+    s = min(w/iw, h/ih); rw, rh = iw*s, ih*s
+    return x+(w-rw)/2, y+(h-rh)/2, rw, rh
 
-def fit_image(path: Path, x: float, y: float, w: float, h: float):
-    with Image.open(path) as image:
-        iw, ih = image.size
-    scale = min(w / iw, h / ih)
-    rw, rh = iw * scale, ih * scale
-    return x + (w - rw) / 2, y + (h - rh) / 2, rw, rh
-
-
-def footer(pdf: canvas.Canvas, page_no: int):
-    pdf.setStrokeColor(LIGHT)
-    pdf.line(38, 27, PAGE_W - 38, 27)
-    pdf.setFont("Helvetica", 7.5)
-    pdf.setFillColor(colors.HexColor("#577083"))
-    pdf.drawString(38, 15, "CONCEPTUAL PORTFOLIO PROJECT - NOT FOR CONSTRUCTION")
-    pdf.drawRightString(PAGE_W - 38, 15, f"PORTFOLIO | {page_no:02d}")
-
-
-def header(pdf: canvas.Canvas, kicker: str, title: str, page_no: int):
-    pdf.setFillColor(NAVY)
-    pdf.rect(0, PAGE_H - 66, PAGE_W, 66, fill=1, stroke=0)
-    pdf.setFillColor(TEAL)
-    pdf.rect(0, PAGE_H - 66, 10, 66, fill=1, stroke=0)
-    pdf.setFillColor(colors.white)
-    pdf.setFont("Helvetica-Bold", 8)
-    pdf.drawString(34, PAGE_H - 24, kicker.upper())
-    pdf.setFont("Helvetica-Bold", 20)
-    pdf.drawString(34, PAGE_H - 48, title)
-    footer(pdf, page_no)
-
-
-def draw_wrapped(pdf: canvas.Canvas, text: str, x: float, y: float, width: float, size: float = 11):
-    words, line, lines = text.split(), "", []
-    for word in words:
-        trial = f"{line} {word}".strip()
-        if pdf.stringWidth(trial, "Helvetica", size) <= width:
-            line = trial
-        else:
-            lines.append(line)
-            line = word
-    if line:
-        lines.append(line)
-    for item in lines:
-        pdf.drawString(x, y, item)
-        y -= size * 1.45
+def wrap(pdf, text, x, y, width, font="Helvetica", size=10, leading=None):
+    leading = leading or size*1.4; lines=[]; line=""
+    for word in text.split():
+        trial=(line+" "+word).strip()
+        if pdf.stringWidth(trial,font,size)<=width: line=trial
+        else: lines.append(line); line=word
+    if line: lines.append(line)
+    pdf.setFont(font,size)
+    for line in lines: pdf.drawString(x,y,line); y-=leading
     return y
 
+def base(pdf):
+    pdf.setFillColor(PAPER); pdf.rect(0,0,W,H,fill=1,stroke=0)
 
-def cover(pdf: canvas.Canvas, image_path: Path):
-    pdf.setFillColor(NAVY)
-    pdf.rect(0, 0, PAGE_W, PAGE_H, fill=1, stroke=0)
-    pdf.setFillColor(TEAL)
-    pdf.rect(0, 0, 18, PAGE_H, fill=1, stroke=0)
-    pdf.setFillColor(colors.white)
-    pdf.setFont("Helvetica-Bold", 10)
-    pdf.drawString(58, PAGE_H - 54, "CIVIL 3D DESIGN PORTFOLIO")
-    pdf.setFont("Helvetica-Bold", 31)
-    pdf.drawString(58, PAGE_H - 119, "Municipal Road")
-    pdf.drawString(58, PAGE_H - 157, "and Sewer Design")
-    pdf.setFont("Helvetica", 12)
-    pdf.setFillColor(colors.HexColor("#A9C8D9"))
-    pdf.drawString(60, PAGE_H - 187, "Conceptual plan and profile drawing package")
-    card_x, card_y, card_w, card_h = 475, 60, PAGE_W - 515, PAGE_H - 110
-    pdf.setFillColor(colors.white)
-    pdf.roundRect(card_x, card_y, card_w, card_h, 10, fill=1, stroke=0)
-    x, y, w, h = fit_image(image_path, card_x + 10, card_y + 10, card_w - 20, card_h - 20)
-    pdf.drawImage(ImageReader(str(image_path)), x, y, w, h, preserveAspectRatio=True, mask="auto")
-    pdf.setFillColor(colors.HexColor("#244B68"))
-    pdf.roundRect(58, 272, 370, 252, 12, fill=1, stroke=0)
-    pdf.setFillColor(colors.white)
-    pdf.setFont("Helvetica-Bold", 10)
-    pdf.drawString(82, 490, "CORE CAPABILITIES")
-    bullets = [
-        "Road corridor and intersection coordination",
-        "Storm and sanitary plan/profile production",
-        "Conceptual GIS/LiDAR-based existing-condition modelling",
-    ]
-    y = 447
-    for item in bullets:
-        pdf.setFillColor(TEAL)
-        pdf.circle(86, y, 4, fill=1, stroke=0)
-        pdf.setFillColor(colors.white)
-        pdf.setFont("Helvetica-Bold", 11)
-        draw_wrapped(pdf, item, 104, y - 4, 292, 11)
-        y -= 67
-    pdf.setFont("Helvetica-Bold", 9)
-    pdf.setFillColor(colors.HexColor("#A9C8D9"))
-    pdf.drawString(58, 96, "CONCEPTUAL PORTFOLIO PROJECT - NOT FOR CONSTRUCTION")
-    pdf.showPage()
+def folio(pdf,n,label="PORTFOLIO"):
+    pdf.setStrokeColor(LINE); pdf.setLineWidth(.6); pdf.line(30,24,W-30,24)
+    pdf.setFillColor(SLATE); pdf.setFont("Helvetica",6.8)
+    pdf.drawString(30,12,"CONCEPTUAL PORTFOLIO PROJECT - NOT FOR CONSTRUCTION")
+    pdf.drawRightString(W-30,12,f"{label}  /  {n:02d}")
 
+def header(pdf,kicker,title,n):
+    base(pdf); pdf.setFillColor(INK); pdf.setFont("Helvetica-Bold",7.2); pdf.drawString(32,H-27,kicker.upper())
+    pdf.setFont("Helvetica-Bold",17); pdf.drawString(32,H-49,title)
+    pdf.setStrokeColor(BLUE); pdf.setLineWidth(2.2); pdf.line(32,H-61,W-32,H-61); folio(pdf,n)
 
-def overview(pdf: canvas.Canvas):
-    header(pdf, "Project narrative", "Design approach and responsibilities", 2)
-    pdf.setFillColor(colors.HexColor("#EEF4F7"))
-    pdf.roundRect(38, PAGE_H - 205, PAGE_W - 76, 107, 10, fill=1, stroke=0)
-    pdf.setFillColor(INK)
-    pdf.setFont("Helvetica", 11)
-    draw_wrapped(pdf, "This independent conceptual exercise demonstrates a coordinated municipal road, storm sewer and sanitary sewer drawing package. The focus is Civil 3D modelling, plan/profile coordination and drawing production—not construction authorization or final engineering certification.", 58, PAGE_H - 127, PAGE_W - 116, 11)
-    columns = [
-        ("MODEL DEVELOPMENT", ["Existing-ground surface", "Road alignment and profile", "Corridor and intersection tie-ins", "Storm and sanitary networks"]),
-        ("DRAWING PRODUCTION", ["Plan and profile views", "Pipe and structure annotation", "Profile data bands", "View frames and match lines"]),
-        ("QUALITY REVIEW", ["Network/profile consistency", "Pipe slopes and inverts", "Structure placement", "Colour plot readability"]),
-    ]
-    for x, (title, items) in zip((38, 317, 596), columns):
-        pdf.setFillColor(colors.white)
-        pdf.setStrokeColor(LIGHT)
-        pdf.roundRect(x, 157, 247, 318, 9, fill=1, stroke=1)
-        pdf.setFillColor(colors.HexColor("#2878B5"))
-        pdf.rect(x, 435, 247, 40, fill=1, stroke=0)
-        pdf.setFillColor(colors.white)
-        pdf.setFont("Helvetica-Bold", 9)
-        pdf.drawString(x + 18, 450, title)
-        y = 400
-        for item in items:
-            pdf.setFillColor(TEAL)
-            pdf.circle(x + 22, y + 3, 3, fill=1, stroke=0)
-            pdf.setFillColor(INK)
-            pdf.setFont("Helvetica", 10)
-            draw_wrapped(pdf, item, x + 36, y + 7, 185, 10)
-            y -= 55
-    pdf.showPage()
+def cover(pdf,image,sheets):
+    base(pdf); ix,iy,iw,ih=28,45,796,H-74
+    pdf.setFillColor(WHITE); pdf.setStrokeColor(LINE); pdf.roundRect(ix,iy,iw,ih,5,fill=1,stroke=1)
+    x,y,w,h=fit(image,ix+9,iy+9,iw-18,ih-18); pdf.drawImage(ImageReader(str(image)),x,y,w,h,mask="auto")
+    px=852; pdf.setFillColor(INK); pdf.roundRect(px,45,W-px-28,H-74,5,fill=1,stroke=0)
+    pdf.setFillColor(GREEN); pdf.rect(px,H-74,72,4,fill=1,stroke=0)
+    pdf.setFillColor(colors.HexColor("#B8C7CE")); pdf.setFont("Helvetica-Bold",7.5); pdf.drawString(px+28,H-103,"CIVIL 3D DESIGN PORTFOLIO")
+    pdf.setFillColor(WHITE); pdf.setFont("Helvetica-Bold",27); pdf.drawString(px+28,H-151,"Municipal Road"); pdf.drawString(px+28,H-185,"and Sewer Design")
+    pdf.setFillColor(colors.HexColor("#CBD5DA")); wrap(pdf,"Conceptual plan and profile drawing package",px+28,H-218,W-px-82,size=10.5)
+    pdf.setStrokeColor(colors.HexColor("#53656F")); pdf.line(px+28,H-258,W-56,H-258)
+    pdf.setFillColor(colors.HexColor("#B8C7CE")); pdf.setFont("Helvetica-Bold",7.2); pdf.drawString(px+28,H-284,"SELECTED CAPABILITIES")
+    y=H-322
+    for item in ["Road corridor and intersection coordination","Storm and sanitary plan/profile production","Conceptual GIS/LiDAR existing-condition modelling"]:
+        pdf.setFillColor(GREEN); pdf.rect(px+29,y-2,4,19,fill=1,stroke=0)
+        pdf.setFillColor(WHITE); y=wrap(pdf,item,px+47,y+10,W-px-100,"Helvetica-Bold",10,14)-27
+    pdf.setFillColor(colors.HexColor("#B8C7CE")); pdf.setFont("Helvetica",7.5); pdf.drawString(px+28,94,f"{sheets} PLAN/PROFILE EXHIBITS")
+    pdf.drawString(px+28,78,"ROAD  /  STORM  /  SANITARY")
+    pdf.setFillColor(WHITE); pdf.setFont("Helvetica-Bold",7.2); pdf.drawString(px+28,61,"CONCEPTUAL - NOT FOR CONSTRUCTION"); pdf.showPage()
 
+def overview(pdf):
+    header(pdf,"Project overview","From existing information to coordinated sheets",2)
+    pdf.setFillColor(INK); pdf.setFont("Helvetica-Bold",21); pdf.drawString(46,H-112,"A concise municipal design-production exercise")
+    pdf.setFillColor(SLATE); wrap(pdf,"This independent conceptual project demonstrates how public terrain and mapping information can be organized into a coordinated Civil 3D road and sewer drawing package. The emphasis is modelling discipline, plan/profile communication and sheet quality.",46,H-143,W-92,size=10.5,leading=15)
+    stages=[("01","Existing context","GIS and LiDAR-derived terrain organized as a conceptual existing-ground model."),("02","Road model","Alignment, profile, corridor and intersection transition coordination."),("03","Municipal services","Storm and sanitary pipes, structures, profiles, labels and bands."),("04","Drawing package","View frames, match lines, colour plan/profile sheets and publication checks.")]
+    for i,(num,title,body) in enumerate(stages):
+        x=46+i*286; pdf.setFillColor(WHITE); pdf.setStrokeColor(LINE); pdf.roundRect(x,305,271,248,5,fill=1,stroke=1)
+        pdf.setFillColor(PALE_B if i%2==0 else PALE_G); pdf.rect(x,493,271,60,fill=1,stroke=0)
+        pdf.setFillColor(BLUE if i%2==0 else GREEN); pdf.setFont("Helvetica-Bold",20); pdf.drawString(x+18,513,num)
+        pdf.setFillColor(INK); pdf.setFont("Helvetica-Bold",12); pdf.drawString(x+18,459,title)
+        pdf.setFillColor(SLATE); wrap(pdf,body,x+18,430,235,size=9.5,leading=14)
+    pdf.setFillColor(INK); pdf.roundRect(46,72,W-92,184,5,fill=1,stroke=0)
+    pdf.setFillColor(WHITE); pdf.setFont("Helvetica-Bold",12); pdf.drawString(68,225,"Professional boundary")
+    pdf.setFillColor(colors.HexColor("#D4DDE1")); wrap(pdf,"This portfolio demonstrates software, coordination and drawing-production skills. Existing conditions are based on public information and require survey, records review, field verification and engineering review before real-world use. The work is not approved, sealed, tendered or construction-ready.",68,199,W-136,size=9.5,leading=14)
+    pdf.setFillColor(GREEN); pdf.rect(68,106,210,3,fill=1,stroke=0); pdf.setFillColor(WHITE); pdf.setFont("Helvetica-Bold",8); pdf.drawString(68,87,"CONCEPTUAL PORTFOLIO PROJECT - NOT FOR CONSTRUCTION"); pdf.showPage()
 
-def drawing_page(pdf: canvas.Canvas, image_path: Path, index: int, total: int):
-    header(pdf, "Drawing exhibit", f"Plan and profile sheet {index} of {total}", index + 2)
-    x, y, w, h = 34, 40, PAGE_W - 68, PAGE_H - 122
-    pdf.setFillColor(colors.white)
-    pdf.setStrokeColor(LIGHT)
-    pdf.roundRect(x, y, w, h, 6, fill=1, stroke=1)
-    ix, iy, iw, ih = fit_image(image_path, x + 7, y + 7, w - 14, h - 14)
-    pdf.drawImage(ImageReader(str(image_path)), ix, iy, iw, ih, preserveAspectRatio=True, mask="auto")
-    pdf.showPage()
+def drawing(pdf,image,index,total):
+    base(pdf); pdf.setFillColor(INK); pdf.setFont("Helvetica-Bold",7.2); pdf.drawString(30,H-24,"MUNICIPAL ROAD AND SEWER DESIGN")
+    pdf.setFillColor(SLATE); pdf.setFont("Helvetica",7.2); pdf.drawRightString(W-30,H-24,f"PLAN / PROFILE EXHIBIT  {index:02d} OF {total:02d}")
+    pdf.setStrokeColor(BLUE); pdf.setLineWidth(1.8); pdf.line(30,H-34,W-30,H-34)
+    fx,fy,fw,fh=24,31,W-48,H-76; pdf.setFillColor(WHITE); pdf.setStrokeColor(LINE); pdf.roundRect(fx,fy,fw,fh,3,fill=1,stroke=1)
+    x,y,w,h=fit(image,fx+5,fy+5,fw-10,fh-10); pdf.drawImage(ImageReader(str(image)),x,y,w,h,mask="auto"); folio(pdf,index+2,"DRAWING EXHIBIT"); pdf.showPage()
 
-
-def closing(pdf: canvas.Canvas, page_no: int):
-    header(pdf, "Portfolio summary", "Demonstrated Civil 3D capabilities", page_no)
-    items = [
-        ("Surface and alignment", "Existing-ground organization and alignment-based plan/profile production."),
-        ("Road corridor", "Corridor geometry and intersection lane-width transition coordination."),
-        ("Pipe networks", "Storm and sanitary pipes, structures, profiles, styles and annotation."),
-        ("Sheet production", "View frames, match lines, data bands and colour sheet-set publishing."),
-    ]
-    y = PAGE_H - 126
-    for number, (title, body) in enumerate(items, 1):
-        pdf.setFillColor(colors.HexColor("#EEF4F7"))
-        pdf.roundRect(46, y - 82, PAGE_W - 92, 70, 8, fill=1, stroke=0)
-        pdf.setFillColor(TEAL)
-        pdf.circle(76, y - 47, 18, fill=1, stroke=0)
-        pdf.setFillColor(colors.white)
-        pdf.setFont("Helvetica-Bold", 12)
-        pdf.drawCentredString(76, y - 51, str(number))
-        pdf.setFillColor(NAVY)
-        pdf.setFont("Helvetica-Bold", 11)
-        pdf.drawString(110, y - 36, title)
-        pdf.setFillColor(INK)
-        pdf.setFont("Helvetica", 9.5)
-        pdf.drawString(110, y - 56, body)
-        y -= 92
-    pdf.setFillColor(NAVY)
-    pdf.roundRect(46, 76, PAGE_W - 92, 88, 9, fill=1, stroke=0)
-    pdf.setFillColor(colors.white)
-    pdf.setFont("Helvetica-Bold", 10)
-    pdf.drawString(68, 132, "PROFESSIONAL USE LIMITATION")
-    pdf.setFont("Helvetica", 9)
-    draw_wrapped(pdf, "This is a skills demonstration—not an issued design, tender document, permit submission, record drawing or construction document. It has not been independently reviewed or sealed.", 68, 112, PAGE_W - 136, 9)
-    pdf.showPage()
-
-
-def validate_source() -> int:
-    if not SOURCE.exists():
-        raise FileNotFoundError(f"Replace this missing file: {SOURCE}")
-    reader = PdfReader(str(SOURCE))
-    count = len(reader.pages)
-    if count < 1 or count > 30:
-        raise RuntimeError(f"Expected 1 to 30 drawing sheets; found {count}.")
-    bad_pages = []
-    for number, page in enumerate(reader.pages, 1):
-        if "???" in (page.extract_text() or ""):
-            bad_pages.append(str(number))
-    if bad_pages:
-        raise RuntimeError("Unresolved '???' text found on source sheet page(s): " + ", ".join(bad_pages))
-    return count
-
+def closing(pdf,n):
+    header(pdf,"Portfolio summary","Capabilities demonstrated",n)
+    pdf.setFillColor(INK); pdf.setFont("Helvetica-Bold",21); pdf.drawString(46,H-115,"A coordinated Civil 3D production workflow")
+    pdf.setFillColor(SLATE); pdf.setFont("Helvetica",10.5); pdf.drawString(46,H-143,"The project connects model development, municipal servicing and drawing communication.")
+    items=[("Surface and alignment","Existing-ground organization, alignment controls and profile-based coordination."),("Road corridor","Corridor geometry and intersection lane-width transition development."),("Pipe networks","Storm and sanitary pipes, structures, styles, labels and profile display."),("Sheet production","Profile bands, view frames, match lines and colour portfolio publishing.")]
+    y=533
+    for i,(title,body) in enumerate(items,1):
+        pdf.setFillColor(PALE_B if i%2 else PALE_G); pdf.roundRect(46,y-77,W-92,69,4,fill=1,stroke=0)
+        pdf.setFillColor(BLUE if i%2 else GREEN); pdf.rect(46,y-77,6,69,fill=1,stroke=0); pdf.setFont("Helvetica-Bold",13); pdf.drawString(74,y-37,f"{i:02d}")
+        pdf.setFillColor(INK); pdf.setFont("Helvetica-Bold",11); pdf.drawString(122,y-30,title); pdf.setFillColor(SLATE); pdf.setFont("Helvetica",9.5); pdf.drawString(122,y-49,body); y-=87
+    pdf.setFillColor(INK); pdf.roundRect(46,65,W-92,98,4,fill=1,stroke=0); pdf.setFillColor(WHITE); pdf.setFont("Helvetica-Bold",10); pdf.drawString(68,132,"USE OF THIS PORTFOLIO")
+    pdf.setFillColor(colors.HexColor("#D4DDE1")); wrap(pdf,"Prepared as an employment portfolio to demonstrate Civil 3D modelling and municipal drawing-production skills. It is not an issued design, permit submission, tender package, record drawing or construction document.",68,109,W-136,size=9,leading=13); pdf.showPage()
 
 def main():
-    count = validate_source()
-    pdftoppm = find_pdftoppm()
-    work = ROOT / ".build"
-    if work.exists():
-        shutil.rmtree(work)
-    work.mkdir(parents=True)
-    OUTPUT.parent.mkdir(parents=True, exist_ok=True)
-    ASSETS.mkdir(parents=True, exist_ok=True)
-    if QA.exists():
-        shutil.rmtree(QA)
-    QA.mkdir(parents=True)
-    subprocess.run([pdftoppm, "-png", "-r", "170", str(SOURCE), str(work / "sheet")], check=True)
-    images = sorted(work.glob("sheet-*.png"))
-    if len(images) != count:
-        raise RuntimeError(f"Rendered {len(images)} images from {count} PDF pages.")
-    sample_source = images[1] if len(images) > 1 else images[0]
-    with Image.open(sample_source) as image:
-        width, height = image.size
-        crop = image.crop((int(width * .02), int(height * .02), int(width * .82), int(height * .97)))
-        crop.save(ASSETS / "plan-profile-sample.png", optimize=True)
-        crop.save(work / "cover-plan-profile.png", optimize=True)
-    pdf = canvas.Canvas(str(OUTPUT), pagesize=(PAGE_W, PAGE_H), pageCompression=1)
-    pdf.setTitle("Municipal Road and Sewer Design Portfolio")
-    pdf.setAuthor("Civil 3D Portfolio")
-    cover(pdf, work / "cover-plan-profile.png")
-    overview(pdf)
-    for index, image_path in enumerate(images, 1):
-        drawing_page(pdf, image_path, index, count)
-    closing(pdf, count + 3)
-    pdf.save()
-    subprocess.run([pdftoppm, "-f", "1", "-singlefile", "-png", "-r", "150", str(OUTPUT), str(ASSETS / "portfolio-cover")], check=True)
-    subprocess.run([pdftoppm, "-png", "-r", "110", str(OUTPUT), str(QA / "portfolio")], check=True)
+    if not SOURCE.exists(): raise FileNotFoundError(f"Replace this missing file: {SOURCE}")
+    count=len(PdfReader(str(SOURCE)).pages)
+    if not 1<=count<=30: raise RuntimeError(f"Expected 1 to 30 drawing sheets; found {count}.")
+    tool=pdftoppm(); work=ROOT/".build"
+    if work.exists(): shutil.rmtree(work)
+    work.mkdir(); OUTPUT.parent.mkdir(exist_ok=True); ASSETS.mkdir(exist_ok=True)
+    if QA.exists(): shutil.rmtree(QA)
+    QA.mkdir()
+    subprocess.run([tool,"-png","-r","190",str(SOURCE),str(work/"sheet")],check=True)
+    images=sorted(work.glob("sheet-*.png"))
+    if len(images)!=count: raise RuntimeError(f"Rendered {len(images)} pages from {count} sheets.")
+    for path in images:
+        with Image.open(path) as im:
+            out=ImageEnhance.Contrast(im.convert("RGB")).enhance(1.035); out=ImageEnhance.Sharpness(out).enhance(1.12); out.save(path,optimize=True)
+    src=images[1] if len(images)>1 else images[0]
+    with Image.open(src) as im:
+        ww,hh=im.size; crop=im.crop((int(ww*.015),int(hh*.015),int(ww*.79),int(hh*.985))); crop.save(ASSETS/"plan-profile-sample.png",optimize=True); cover_image=work/"cover-plan-profile.png"; crop.save(cover_image,optimize=True)
+    pdf=canvas.Canvas(str(OUTPUT),pagesize=(W,H),pageCompression=1); pdf.setTitle("Municipal Road and Sewer Design Portfolio"); pdf.setAuthor("Civil 3D Portfolio")
+    cover(pdf,cover_image,count); overview(pdf)
+    for i,image in enumerate(images,1): drawing(pdf,image,i,count)
+    closing(pdf,count+3); pdf.save()
+    subprocess.run([tool,"-f","1","-singlefile","-png","-r","150",str(OUTPUT),str(ASSETS/"portfolio-cover")],check=True)
+    subprocess.run([tool,"-png","-r","125",str(OUTPUT),str(QA/"portfolio")],check=True)
     print(f"Built {OUTPUT} from {count} sheet(s).")
-    print(f"Review the rendered pages in {QA} before publishing.")
 
-
-if __name__ == "__main__":
-    main()
+if __name__=="__main__": main()
