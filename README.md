@@ -4,7 +4,7 @@
 ![Project](https://img.shields.io/badge/Project-Conceptual-21A6A1?style=for-the-badge)
 ![Status](https://img.shields.io/badge/Status-Not%20for%20Construction-E55A5A?style=for-the-badge)
 
-An anonymized Civil 3D portfolio demonstrating a coordinated municipal road corridor with storm and sanitary sewer networks, plan/profile production, annotation, data bands, view frames, match lines and colour sheet-set publishing.
+An anonymized Civil 3D portfolio demonstrating a coordinated municipal road and sewer model carried from public terrain information through plan/profile sheet production.
 
 > **Conceptual Portfolio Project - Not for Construction.** This repository demonstrates software and drawing-production skills. It is not an issued design, permit submission, tender package, record drawing or construction document.
 
@@ -20,7 +20,7 @@ An anonymized Civil 3D portfolio demonstrating a coordinated municipal road corr
 
 [View the complete portfolio PDF](docs/Municipal_Road_and_Sewer_Design_Portfolio.pdf)
 
-The portfolio includes a project overview, coordinated plan/profile exhibits, demonstrated Civil 3D capabilities, and explicit data and professional-use limitations.
+The portfolio presents the project brief, design-basis and verification matrix, controlled model-to-sheet workflow, municipal authorization workflow, four drawing exhibits, and an explicit senior-review boundary.
 
 ## Project at a Glance
 
@@ -31,21 +31,20 @@ The portfolio includes a project overview, coordinated plan/profile exhibits, de
 | Storm sewer | Pipes, maintenance structures, plan/profile display, labels and profile bands |
 | Sanitary sewer | Pipes, maintenance structures, plan/profile display, labels and profile bands |
 | Drawing production | View frames, match lines, plan/profile sheets, colour plotting and sheet-set publication |
-| Quality review | Network/profile consistency, structure placement, slopes, inverts, cover and drawing readability |
+| Quality review | Network/profile consistency, structure placement, slopes, inverts, cover targets and drawing readability |
 
 ## Drawing Sample
 
 ![Plan and profile drawing sample](assets/plan-profile-sample.png)
 
-## Skills Demonstrated
+## Model and Production Workflow
 
-- Civil 3D surface, alignment, profile and corridor organization
-- Road geometry and intersection transition coordination
-- Storm and sanitary pipe-network modelling
-- Pipe and structure styles, annotation and profile display
-- Profile bands for stations, pipe data and structures
-- View frames, match lines, XREF coordination and sheet-set publishing
-- Colour PDF production and drawing presentation
+1. Organize GIS and LiDAR-derived source information and state its limitations.
+2. Develop the existing-ground surface, alignments and reference profiles.
+3. Model the road corridor, intersection geometry, lane transitions and grading intent.
+4. Coordinate storm and sanitary pipes and structures in plan and profile.
+5. Assemble production drawings using data shortcuts, XREFs, profile bands, view frames and match lines.
+6. Publish the colour sheet set and complete model, annotation and PDF checks.
 
 ## Conceptual Design Basis
 
@@ -53,15 +52,15 @@ The model was developed using the following project controls, interpreted from a
 
 | Design element | Criterion applied in the conceptual model |
 |---|---|
-| Storm sewer cover | Minimum target of 1.5 m or greater |
-| Sanitary sewer cover | Minimum target of 2.5 m or greater |
+| Storm sewer cover | Minimum target of 1.5 m; current exported results include exceptions that require correction and re-verification |
+| Sanitary sewer cover | Minimum target of 2.5 m; independent network-export verification remains pending |
 | Road profile | Grades and vertical transitions checked against applicable municipal geometric requirements |
 | Lane drainage | Typical 2.0% crossfall from crown toward gutter where applicable |
 | Horizontal coordination | Lane widths, intersection tie-ins and corridor-region transitions coordinated by station |
 | Pipe-network coordination | Diameters, slopes, inverts, structure depths, cover and crossings reviewed in plan and profile |
 | Drawing coordination | Plan/profile agreement, labels, bands, match lines and colour plotting reviewed |
 
-These are portfolio design controls, not evidence of final approval or code compliance. A real project also requires current survey, utility records, geotechnical information, hydrology and hydraulic calculations, downstream-capacity confirmation, constructability review and licensed engineering oversight.
+These are portfolio design controls, not claims of completed compliance. The storm network must be rebuilt and its cover exceptions resolved; the sanitary network still requires an equivalent independent cover report. A real project also requires current survey, utility records, geotechnical information, hydrology and hydraulic calculations, downstream-capacity confirmation, constructability review and licensed engineering oversight.
 
 ## Municipal Delivery and CLI-ECA Workflow
 
@@ -74,6 +73,24 @@ These are portfolio design controls, not evidence of final approval or code comp
 7. **Construction and closeout.** Maintain inspection and testing records; complete CCTV, mandrel, leakage or other testing as applicable; resolve deficiencies; prepare as-built information and O&M documentation; complete post-construction verification; and submit required owner or Director notifications.
 
 The CLI-ECA pathway does not itself prove that downstream capacity exists, that all other permits are satisfied, or that the work is ready for construction.
+
+### Regulatory Source Basis
+
+The delivery workflow is based on current Ontario Ministry of the Environment, Conservation and Parks material:
+
+- [Municipal Consolidated Linear Infrastructure Environmental Compliance Approvals](https://www.ontario.ca/page/municipal-consolidated-linear-infrastructure-environmental-compliance-approvals)
+- [Supporting documentation and technical requirements for an ECA](https://www.ontario.ca/document/guide-applying-environmental-compliance-approval-0/supporting-documentation-and-technical)
+- [Ontario Central Forms Repository - MECP CLI-ECA records](https://forms.mgcs.gov.on.ca/en/dataset/?_organization_limit=0&organization=ministry-of-environment-conservation-and-parks&q=CLA-1-F)
+
+The municipality's current CLI-ECA, project-specific conditions and latest forms must always be checked before using this workflow on a real project.
+
+## Verification Status
+
+| Status | Scope |
+|---|---|
+| Demonstrated | Civil 3D object organization, road and intersection coordination, pipe-network plan/profile display, annotation, bands, XREFs, view frames, match lines and colour sheet publication |
+| Requires further checking | Pipe connectivity, all cover values, crossings, hydraulic capacity, downstream reserve capacity, design exceptions and drawing-sheet defect review |
+| Not represented as complete | Survey verification, utility locates, geotechnical design, quantities, specifications, approvals, licensed engineering review, construction inspection and as-built closeout |
 
 ## Data and Engineering Limitations
 
