@@ -18,7 +18,7 @@ An anonymized Civil 3D portfolio demonstrating a coordinated municipal road and 
 
 ## Portfolio
 
-[View the complete portfolio PDF](https://raw.githubusercontent.com/patelakash1212-dot/conceptual-municipal-road-sewer-design/main/docs/Municipal_Road_and_Sewer_Design_Portfolio.pdf)
+[View the complete portfolio PDF](docs/Municipal_Road_and_Sewer_Design_Portfolio.pdf)
 
 [View the municipal road cross-section drawing package](docs/Municipal_Road_Cross_Sections.pdf)
 
