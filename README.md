@@ -20,17 +20,19 @@ An anonymized Civil 3D portfolio demonstrating a coordinated municipal road and 
 
 [View the complete portfolio PDF](docs/Municipal_Road_and_Sewer_Design_Portfolio.pdf)
 
-The portfolio presents the project brief, design-basis and verification matrix, controlled model-to-sheet workflow, municipal authorization workflow, four drawing exhibits, and an explicit senior-review boundary.
+[View the municipal road cross-section drawing package](docs/Municipal_Road_Cross_Sections.pdf)
+
+The portfolio presents the project brief, design-basis and verification matrix, controlled model-to-sheet workflow, municipal authorization workflow, four plan/profile drawing exhibits, a three-sheet road cross-section package, and an explicit senior-review boundary.
 
 ## Project at a Glance
 
 | Design component | Demonstrated work |
 |---|---|
 | Existing conditions | Existing-ground surface assembled from publicly available mapping and LiDAR-derived terrain information |
-| Road | Alignment, profile, corridor modelling and intersection lane-width coordination |
+| Road | Alignment, profile, corridor modelling, intersection lane-width coordination and cross-section sheet production |
 | Storm sewer | Pipes, maintenance structures, plan/profile display, labels and profile bands |
 | Sanitary sewer | Pipes, maintenance structures, plan/profile display, labels and profile bands |
-| Drawing production | View frames, match lines, plan/profile sheets, colour plotting and sheet-set publication |
+| Drawing production | View frames, match lines, plan/profile and cross-section sheets, colour plotting and sheet-set publication |
 | Quality review | Network/profile consistency, structure placement, slopes, inverts, cover targets and drawing readability |
 
 ## Drawing Sample
@@ -105,7 +107,8 @@ The drawings have not been independently checked, approved, sealed, tendered or 
 |-- README.md
 |-- PROJECT_NOTES.md
 |-- docs/
-|   `-- Municipal_Road_and_Sewer_Design_Portfolio.pdf
+|   |-- Municipal_Road_and_Sewer_Design_Portfolio.pdf
+|   `-- Municipal_Road_Cross_Sections.pdf
 `-- assets/
     |-- portfolio-cover.png
     `-- plan-profile-sample.png
