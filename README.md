@@ -39,6 +39,40 @@ The portfolio presents the project brief, design-basis and verification matrix, 
 
 ![Plan and profile drawing sample](assets/plan-profile-sample.png)
 
+## Road Cross-Section Views
+
+[Open the three-sheet cross-section drawing package](docs/Municipal_Road_Cross_Sections.pdf)
+
+The cross-section package demonstrates how the corridor model was sampled and presented for grading review. It contains 29 section views at 20 m intervals from station 0+020 to 0+580. Each view uses an offset range of approximately 20 m left and right of the road centreline and an elevation grid suited to the local ground and corridor elevation.
+
+### Information Presented
+
+| Section-view element | Purpose in the drawing review |
+|---|---|
+| Station label | Identifies the location of each sampled corridor section along the road alignment |
+| Offset grid | Provides horizontal reference from the alignment centreline to the left and right sides of the corridor |
+| Elevation grid | Supports comparison of existing and proposed levels across each section |
+| Existing-ground line | Shows the interpreted terrain derived from the conceptual existing-ground surface |
+| Proposed corridor links | Show the modelled crown, lane, gutter/curb and roadside grading geometry where represented by the corridor assembly |
+| Centreline elevation | Reports the sampled road-centreline level for coordination with the finished-grade profile |
+| Crossfall labels | Communicate the modelled lane or surface slopes, typically 2.0% away from the crown in regular road sections |
+| Local transition sections | Reveal changes in width, slope and corridor geometry near intersection and tie-in regions |
+
+### Civil 3D Production Method
+
+1. Create sample lines perpendicular to the road alignment at the required station interval and at critical geometry locations.
+2. Add the existing-ground surface and finished corridor surfaces or corridor links as sampled section sources.
+3. Generate multiple section views using a consistent section-view style, grid, offset range and elevation-datum strategy.
+4. Apply section labels for station, centreline elevation, offsets, elevations and crossfall values.
+5. Arrange the views into section sheets and review the sequence for consistent scales, spacing and station progression.
+6. Rebuild the corridor and update the section views whenever profiles, assemblies, targets or corridor regions change.
+
+### Design Review Use
+
+The section views support review of crown-to-gutter drainage, typical lane crossfall, corridor width transitions, intersection tie-ins, daylight behaviour and differences between existing and proposed grades. They also provide a visual QA check that the corridor assembly and targets are behaving consistently between plan and profile control points.
+
+These sheets demonstrate Civil 3D section-view production; they do not establish final earthwork quantities, property impacts, accessibility compliance, utility clearances or construction-ready grading. The generic title-block fields remain placeholders and must be completed before any formal drawing issue.
+
 ## Model and Production Workflow
 
 1. Organize GIS and LiDAR-derived source information and state its limitations.
@@ -46,7 +80,8 @@ The portfolio presents the project brief, design-basis and verification matrix, 
 3. Model the road corridor, intersection geometry, lane transitions and grading intent.
 4. Coordinate storm and sanitary pipes and structures in plan and profile.
 5. Assemble production drawings using data shortcuts, XREFs, profile bands, view frames and match lines.
-6. Publish the colour sheet set and complete model, annotation and PDF checks.
+6. Generate and review corridor cross-sections at regular and critical stations.
+7. Publish the colour sheet set and complete model, annotation and PDF checks.
 
 ## Conceptual Design Basis
 
