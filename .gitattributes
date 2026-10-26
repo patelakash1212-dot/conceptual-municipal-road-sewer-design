@@ -1,0 +1,5 @@
+# Preserve generated documents as binary files on Windows.
+*.pdf binary
+*.png -text
+*.jpg -text
+*.jpeg -text
